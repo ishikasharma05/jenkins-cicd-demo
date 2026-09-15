@@ -1,0 +1,67 @@
+// Declarative Pipeline for Jenkins CI/CD
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out source code from Git...'
+                // In a real Jenkins job, this is handled by the Git plugin
+                // checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                echo 'Installing Python dependencies...'
+                sh 'pip install -r requirements.txt'
+            }
+        }
+
+        stage('Run Unit Tests') {
+            steps {
+                echo 'Running pytest unit tests...'
+                sh 'pytest tests/ --verbose'
+            }
+            post {
+                always {
+                    // Publish test results (optional, requires JUnit XML output)
+                    // junit 'reports/*.xml'
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Building application (placeholder for packaging)...'
+                // Example: create a distributable package
+                sh 'echo "Build completed successfully"'
+            }
+        }
+
+        stage('Deploy') {
+            when {
+                branch 'main'
+            }
+            steps {
+                echo 'Deploying to staging/production (placeholder)...'
+                // Add deployment steps here (e.g., docker build, kubectl apply, etc.)
+                sh 'echo "Deployment completed"'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline finished. Cleaning up...'
+            // Clean workspace if needed
+            // cleanWs()
+        }
+        success {
+            echo 'Pipeline succeeded!'
+        }
+        failure {
+            echo 'Pipeline failed! Check logs for details.'
+        }
+    }
+}

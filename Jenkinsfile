@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -9,24 +13,32 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Setup Python') {
             steps {
-                echo 'Installing requirements...'
-                sh 'python3 -m pip install -r requirements.txt || pip install -r requirements.txt'
+                echo 'Creating Python virtual environment...'
+                sh '''
+                    python3 -m venv .venv
+                    . .venv/bin/activate
+                    python -m pip install --upgrade pip
+                    python -m pip install -r requirements.txt
+                '''
             }
         }
 
         stage('Run Tests') {
             steps {
                 echo 'Running unit tests...'
-                sh 'python3 -m unittest discover -s tests || python -m unittest discover -s tests'
+                sh '''
+                    . .venv/bin/activate
+                    python -m pytest -v
+                '''
             }
         }
 
         stage('Deploy') {
             steps {
                 echo 'Deploying application...'
-                // Add deployment steps here (e.g. AWS / Docker deployment)
+                echo 'Deployment steps will be added later.'
             }
         }
     }
@@ -35,9 +47,11 @@ pipeline {
         always {
             echo 'Pipeline run finished.'
         }
+
         success {
             echo 'All tests passed successfully!'
         }
+
         failure {
             echo 'Build or tests failed.'
         }

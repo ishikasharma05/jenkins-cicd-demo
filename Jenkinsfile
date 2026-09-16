@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'python:3.12-slim'
+            args '-u root'
+        }
+    }
 
     options {
         skipDefaultCheckout(true)
@@ -13,12 +18,11 @@ pipeline {
             }
         }
 
-        stage('Setup Python') {
+        stage('Install Dependencies') {
             steps {
-                echo 'Creating Python virtual environment...'
+                echo 'Installing requirements...'
                 sh '''
-                    python3 -m venv .venv
-                    . .venv/bin/activate
+                    python --version
                     python -m pip install --upgrade pip
                     python -m pip install -r requirements.txt
                 '''
@@ -29,7 +33,6 @@ pipeline {
             steps {
                 echo 'Running unit tests...'
                 sh '''
-                    . .venv/bin/activate
                     python -m pytest -v
                 '''
             }

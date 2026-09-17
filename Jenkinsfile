@@ -34,7 +34,13 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo 'Deployment stage reached.'
+                echo 'Deploying application...'
+                sh '''
+                    mkdir -p /var/jenkins_home/deployed
+                    cp -r * /var/jenkins_home/deployed/
+                    echo "Deployed files:"
+                    ls -la /var/jenkins_home/deployed/
+                '''
             }
         }
     }
@@ -43,11 +49,9 @@ pipeline {
         always {
             echo 'Pipeline run finished.'
         }
-
         success {
             echo 'All tests passed successfully!'
         }
-
         failure {
             echo 'Build or tests failed.'
         }

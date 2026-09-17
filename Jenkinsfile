@@ -1,9 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.12-slim'
-        }
-    }
+    agent any
 
     options {
         skipDefaultCheckout(true)
@@ -21,9 +17,9 @@ pipeline {
             steps {
                 echo 'Installing requirements...'
                 sh '''
-                    python --version
-                    python -m pip install --upgrade pip
-                    python -m pip install -r requirements.txt
+                    python3 --version
+                    python3 -m pip install --upgrade pip
+                    python3 -m pip install -r requirements.txt
                 '''
             }
         }
@@ -32,15 +28,14 @@ pipeline {
             steps {
                 echo 'Running unit tests...'
                 sh '''
-                    python -m pytest -v
+                    python3 -m pytest -v
                 '''
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying application...'
-                echo 'Deployment steps will be added later.'
+                echo 'Deployment stage reached.'
             }
         }
     }
